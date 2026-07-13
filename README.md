@@ -214,7 +214,7 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
   }
 
   // Seed the ZScaler / MacBook Pro incident that demonstrates ZTSD DEX remediation in the lab.
-  // Caller: Fred Luddy when available; otherwise resolve a stable active user.
+  // Caller: Fred Luddy when available; otherwise prefer known demo personas.
   // CI: MacBook Pro (resolved dynamically from cmdb_ci_computer).
   // Assigned to l1.servicedesk so the ZTSD Trigger - L1 Service Desk Specialist flow fires.
   function seedZscalerIncident() {
@@ -248,7 +248,7 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
       callerName  = cu.getValue('name');
     } else {
       // Prefer known demo personas when Fred Luddy is absent.
-      var fallbackNames = ['Ahmed Saad', 'Luca Bianchi', 'Irene Rose'];
+      var fallbackNames = ['Aaron Peterson', 'Ahmed Saad', 'Luca Bianchi', 'Irene Rose'];
       for (var f = 0; f < fallbackNames.length && !callerSysId; f++) {
         var fu = new GlideRecord('sys_user');
         fu.addQuery('name', fallbackNames[f]);
@@ -304,14 +304,35 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
       ciName  = ci.getValue('name');
     }
 
-    // Check if any ZScaler incident is already correctly assigned to Ravi Kapoor
+    var SEED_SHORT_DESC = 'ZScaler tunnel dropping — cannot reach internal apps';
+
+    // The trigger immediately reassigns Ravi's incident to the AI specialist, so
+    // assigned_to is not a stable idempotency key. Match the exact seed identity
+    // and repair only its caller; preserve trigger-owned state and assignment.
     var correct = new GlideRecord('incident');
-    correct.addQuery('short_description', 'CONTAINS', 'ZScaler');
-    correct.addQuery('assigned_to', RAVI_SYS_ID);
-    correct.setLimit(1);
+    correct.addQuery('short_description', SEED_SHORT_DESC);
     correct.query();
-    if (correct.next()) {
-      pass('ztsd-zscaler-incident', 'ZScaler incident already assigned to Ravi Kapoor: ' + correct.getValue('number'));
+    var existingCount = 0;
+    var callerRepairs = 0;
+    var existingNumbers = [];
+    while (correct.next()) {
+      existingCount++;
+      existingNumbers.push(String(correct.getValue('number') || correct.getUniqueValue()));
+      if (String(correct.getValue('caller_id') || '') !== String(callerSysId)) {
+        correct.setValue('caller_id', callerSysId);
+        correct.setWorkflow(false);
+        correct.update();
+        callerRepairs++;
+        changed++;
+      }
+    }
+    if (existingCount > 0) {
+      if (existingCount > 1) {
+        warn('seedZscalerIncident: found ' + existingCount + ' existing exact seed incidents (' +
+          existingNumbers.join(', ') + '); preserved them and prevented another duplicate');
+      }
+      pass('ztsd-zscaler-incident', existingCount + ' exact seed incident(s) present; caller=' +
+        callerName + ', caller_repairs=' + callerRepairs);
       return true;
     }
 
@@ -370,7 +391,7 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
     // Create the seed incident
     var inc = new GlideRecord('incident');
     inc.initialize();
-    inc.setValue('short_description', 'ZScaler tunnel dropping — cannot reach internal apps');
+    inc.setValue('short_description', SEED_SHORT_DESC);
     inc.setValue('description', 'ZScaler tunnel dropping intermittently on this endpoint — device-specific; other users on the same network are unaffected. Network diagnostics show VPN gateway disconnects unique to this machine. No recent software changes or updates were made. Standard troubleshooting (client reinstall, reboot) has not resolved the issue. Device-level investigation required to identify root cause.');
     inc.setValue('caller_id', callerSysId);
     inc.setValue('assignment_group', IT_SUPPORT_GROUP);
@@ -395,6 +416,67 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
       fail('ztsd-zscaler-incident', 'Failed to insert ZScaler seed incident');
       return false;
     }
+  }
+
+  // Flow Designer runs published snapshots, not the mutable action definition.
+  // Package upgrades can update Trigger ZTSD without publishing a new snapshot,
+  // leaving the active flow bound to obsolete logic while executions look green.
+  function gateZtsdCompiledAction() {
+    var actionDef = new GlideRecord('sys_hub_action_type_definition');
+    actionDef.addQuery('internal_name', 'trigger_ztsd');
+    actionDef.setLimit(1);
+    actionDef.query();
+    if (!actionDef.next()) {
+      fail('ztsd-compiled-action', 'Trigger ZTSD action definition not found');
+      return false;
+    }
+
+    var actionMaster = String(actionDef.getValue('master_snapshot') || '');
+    var actionLatest = String(actionDef.getValue('latest_snapshot') || '');
+    if (!actionMaster || !actionLatest) {
+      fail('ztsd-compiled-action', 'Trigger ZTSD is missing master/latest snapshot metadata');
+      return false;
+    }
+    if (actionMaster !== actionLatest) {
+      fail('ztsd-compiled-action', 'Trigger ZTSD has unpublished action changes: master=' +
+        actionMaster + ', latest=' + actionLatest + '. Publish the Trigger ZTSD action first, then republish the flow.');
+      return false;
+    }
+
+    var flow = new GlideRecord('sys_hub_flow');
+    flow.addQuery('internal_name', 'ztsd_trigger__l1_service_desk_specialist');
+    flow.setLimit(1);
+    flow.query();
+    if (!flow.next()) {
+      fail('ztsd-compiled-action', 'ZTSD Trigger - L1 Service Desk Specialist flow not found');
+      return false;
+    }
+
+    var actionInstance = new GlideRecord('sys_hub_action_instance_v2');
+    actionInstance.addQuery('flow', flow.getUniqueValue());
+    actionInstance.addQuery('action_type', actionMaster);
+    actionInstance.setLimit(1);
+    actionInstance.query();
+    if (!actionInstance.next()) {
+      var anyInstance = new GlideRecord('sys_hub_action_instance_v2');
+      anyInstance.addQuery('flow', flow.getUniqueValue());
+      anyInstance.setLimit(1);
+      anyInstance.query();
+      var compiled = anyInstance.next() ? String(anyInstance.getValue('compiled_snapshot') || '') : '(none)';
+      fail('ztsd-compiled-action', 'flow is not compiled against Trigger ZTSD published snapshot ' +
+        actionMaster + ' (current=' + compiled + '). Republish the flow after publishing the action.');
+      return false;
+    }
+
+    var compiledSnapshot = String(actionInstance.getValue('compiled_snapshot') || '');
+    if (compiledSnapshot !== actionMaster) {
+      fail('ztsd-compiled-action', 'flow compiled_snapshot=' + compiledSnapshot +
+        ' does not match Trigger ZTSD master_snapshot=' + actionMaster + '. Republish the flow.');
+      return false;
+    }
+
+    pass('ztsd-compiled-action', 'Trigger ZTSD action and L1 flow use published snapshot ' + actionMaster);
+    return true;
   }
 
   // ---------------------------------------------------------------------------
@@ -569,6 +651,7 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
 
   var scopeOk = resetAppScopePreference();
   var dexOk = fixZtsdDexSecurityViolation();
+  var compiledActionOk = gateZtsdCompiledAction();
   var incidentOk = seedZscalerIncident();
   var contentOk = seedRaviKbAndCatalog();
 
@@ -583,14 +666,16 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
   print('--- GATE SUMMARY ---');
   print('GATE_ZTSD_APP_SCOPE=' + (scopeOk ? 'PASS' : 'FAIL'));
   print('GATE_ZTSD_DEX_FIX=' + (dexOk ? 'PASS' : 'FAIL'));
+  print('GATE_ZTSD_COMPILED_ACTION=' + (compiledActionOk ? 'PASS' : 'FAIL'));
   print('GATE_ZTSD_INCIDENT=' + (incidentOk ? 'PASS' : 'FAIL'));
   print('GATE_ZTSD_CONTENT=' + (contentOk ? 'PASS' : 'FAIL'));
 
-  if (failed === 0 && scopeOk && dexOk && incidentOk && contentOk) {
+  if (failed === 0 && scopeOk && dexOk && compiledActionOk && incidentOk && contentOk) {
     print('VERDICT: PASS - ZTSD lab build finalized');
   } else {
     print('VERDICT: FAIL - one or more ZTSD finalizer gates failed');
   }
 })();
+
 ```
 {% endcode %}
