@@ -41,22 +41,7 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
 
 {% code overflow="wrap" expandable="true" %}
 ```javascript
-// ZTSD AUS v3 - standalone post-build repair and acceptance gate.
-// Split from 23_AICT_154439_Finalize_Remaining_Issues.js for GitBook portability.
-// Run once after the base lab manifest. Idempotent and safe to rerun.
-(function () {
-  var BLOCKED_INSTANCE = 'techsummitdemo26ams152975';
-  var instanceName = String(gs.getProperty('instance_name') || '');
-  var instanceUri = String(gs.getProperty('glide.servlet.uri') || '');
-  var passed = 0;
-  var failed = 0;
-  var documented = 0;
-  var changed = 0;
-  var warnings = [];
 
-  function print(message) {
-    gs.print(message);
-  }
 
   function pass(gate, message) {
     passed++;
