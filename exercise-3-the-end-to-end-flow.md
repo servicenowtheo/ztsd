@@ -20,7 +20,9 @@
 
 ### ❇️ Step 1- Assign the Incident to the AI L1 Service Desk Specialist
 
-1. As Ravi, on the Service Operations Workspace, select the Incident pre-seeded for this lab, let's start with **INC0010766**
+1. As Ravi, on the Service Operations Workspace, select the Incident pre-seeded for this lab, let's start with **INC0010015**
+
+    > **Note:** If this incident isn't in **New** state, update its state to **New** before continuing so the assignment step below triggers correctly.
 
 
 
@@ -30,7 +32,7 @@
 
 1. On the incident record, navigate to the **Details** tab.
 2. Scroll down to the **Assignment** section.
-3. In the **Assigned to** field, type `ai` and select **Athena (whatever name you chose)  L1 Service Desk Specialist** from the dropdown.
+3. In the **Assigned to** field, type `ai` and select the AI Specialist you named in Exercise 1 (e.g., **Athena L1 Service Desk Specialist**) from the dropdown.
 4. An **Assign** dialog will appear with the following details:
    * **Assigned to:** AI L1 Service Desk Specialist
    * **Work notes:** A Now Assist-generated summary of the issue (e.g., _"Issue: A user is experiencing an inability to access the internet on their laptop..."_)

@@ -17,7 +17,7 @@ From the moment an employee picks up the phone to the moment their laptop issue 
 1. Set up and activate the L1 Service Desk AI Specialist to autonomously classify, investigate, and resolve incidents.
 2. Review the DEX remediation trigger AI agent and understand how it executes device-level fixes without human intervention.
 3. Run a complete end-to-end Zero Touch Support flow — from an employee's seeing an incident created by a phone call through autonomous resolution and device remediation.
-4. Monitor AI worker performance, activity, and feedback through built-in dashboards.
+4. Monitor AI Specialist performance, activity, and feedback through built-in dashboards.
 5. Author and publish a knowledge article, then watch the AI Specialist use it to deflect a matching incident.
 
 ***

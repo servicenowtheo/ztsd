@@ -10,7 +10,7 @@
 
 1.  In the filter navigator, type **AI Agent Studio** and select **AI Agent Studio > Overview**.
 
-    > You'll land on the AI Agent Studio Overview page, where you can see ready-made AI automations and any AI workers already active in your organization.
+    > You'll land on the AI Agent Studio Overview page, where you can see ready-made AI automations and any AI Specialists already active in your organization.
 
 
 
@@ -22,9 +22,9 @@
 
 ### ❇️ Open the AI L1 Service Desk Specialist for editing
 
-1. On the AI Agent Studio Overview page, locate the **AI L1 Service Desk Specialist** card under _Ready-made AI automations > AI workers_.
-2. Select **Edit** on the AI L1 Service Desk Specialist card.
-3. In the **Edit your AI worker** modal, review the summary:
+1. On the AI Agent Studio Overview page, locate the **AI L1 Service Desk Specialist** card under _Ready-made AI automations > AI Specialists_.
+2. Select **View Details** on the AI L1 Service Desk Specialist card. (Note: the card no longer shows an **Edit** option — you may also see an **Unpublish** action, which is not needed for this exercise.)
+3. In the **AI Specialist details** modal, review the summary:
    * **Skills:** General inquiries, Laptop issues
    * **Assignment groups:** Conditional Script Writer, IT Support
    * **Roles:** Listed below the assignment groups
@@ -42,16 +42,16 @@
 
 ### ❇️ Personalize the AI Specialist Profile
 
-You are now on the **Profile** page for the AI L1 Service Desk Specialist. This is where you configure the AI worker's identity, skills, group membership, and roles.
+You are now on the **Profile** page for the AI L1 Service Desk Specialist. This is where you configure the AI Specialist's identity, skills, group membership, and roles.
 
-1. Select the **pencil icon** next to the AI worker's name.
+1. Select the **pencil icon** next to the AI Specialist's name.
 2.  Change the **First name** and/or **Last name** to a name of your choice — make it your own!
 
     > For example: First name: `Athena` / Last name: `IT Bot`
 3. Scroll down to the **Assignment groups** section.
 4.  In the Assignment groups field, type `IT S` and select **IT Support** from the dropdown to add the AI Specialist to the IT Support group.
 
-    > Assignment groups determine which team's tickets the AI worker will pick up. Adding IT Support means the AI Specialist will begin handling incidents assigned to that group.
+    > Assignment groups determine which team's tickets the AI Specialist will pick up. Adding IT Support means the AI Specialist will begin handling incidents assigned to that group.
 5. Review the **Roles** section. The AI Specialist should already have the following roles assigned:
    * `sn_dex.service_desk_user`
    * `sn_service_desk_agent`
@@ -71,7 +71,7 @@ You are now on the **Profile** page for the AI L1 Service Desk Specialist. This 
 
 ### ❇️ Configure Tasks — Classify and assign
 
-The **Tasks** section is where you configure how the AI worker makes decisions, takes action, and interacts within workflows. Select **Tasks** in the left-hand navigation.
+The **Tasks** section is where you configure how the AI Specialist makes decisions, takes action, and interacts within workflows. Select **Tasks** in the left-hand navigation.
 
 1. Select **Classify and assign** from the task list.
 2. In the Settings panel on the right, review the configuration:
@@ -79,7 +79,7 @@ The **Tasks** section is where you configure how the AI worker makes decisions, 
    * **Fields to classify on the record:** Category, Subcategory, Service, Service offering, Configuration item
 3.  You can add or remove fields depending on what you'd like the AI Specialist to predict when triaging new incidents.
 
-    > These are the fields the AI worker will automatically populate when it picks up a new incident. Tailor this list to match your organization's classification requirements.
+    > These are the fields the AI Specialist will automatically populate when it picks up a new incident. Tailor this list to match your organization's classification requirements.
 
 
 
@@ -95,10 +95,10 @@ The **Tasks** section is where you configure how the AI worker makes decisions, 
 2. In the Settings panel, review the following:
    * **Fields to use (Additional fields):** Description, Short description, Caller
    * **Related lists to use (Additional related lists):** Affected CIs
-   * **Use attachment content:** Toggled **ON** — this allows the AI worker to review attached files as part of its triage process.
-3.  Scroll down to **Map AI worker states to record states**. Confirm the following mappings:
+   * **Use attachment content:** Toggled **ON** — this allows the AI Specialist to review attached files as part of its triage process.
+3.  Scroll down to **Map AI Specialist states to record states**. Confirm the following mappings:
 
-    | AI Worker State   | → | Incident State |
+    | AI Specialist State   | → | Incident State |
     | ----------------- | - | -------------- |
     | Work in progress  | → | In Progress    |
     | Awaiting info     | → | On Hold        |
@@ -120,13 +120,17 @@ The **Tasks** section is where you configure how the AI worker makes decisions, 
      * `ZTSD Search Profile`
      * `Known Error Matcher`
    * Select **+ Add** to attach additional search profiles if needed.
+
+     > **Note:** If `Known Error Matcher` isn't listed, select **+ Add** and add it manually before continuing.
 3.  Set the **Research depth** based on your preference:
 
     * **Low** – faster results, less detail
     * **Medium** – balanced results, moderate depth
     * **High** – slower results, more detail
 
-    > Knowledge sources define where the AI Specialist looks for resolution information. Search profiles can include knowledge bases, known error databases, and other indexed content. The research depth controls how extensively the AI worker investigates before proposing a solution.
+    > Knowledge sources define where the AI Specialist looks for resolution information. Search profiles can include knowledge bases, known error databases, and other indexed content. The research depth controls how extensively the AI Specialist investigates before proposing a solution.
+
+    > **Note:** Product Management has indicated the Research Depth setting is currently not applied by the AI Specialist and is expected to be removed in a future release. You can leave it at the default for now.
 
 
 
@@ -155,11 +159,11 @@ The **Tasks** section is where you configure how the AI worker makes decisions, 
 Now let's see the AI Specialist in action on a real incident record.
 
 1. Select **Test** in the left-hand navigation.
-2. In the **Choose a record** field, enter an incident number (e.g., `INC0010314`).
+2. In the **Choose a record** field, enter an incident number (e.g., `INC0010001`).
 3. Select **Run**.
-4.  Watch the AI worker process the incident in real time — it will classify, triage, investigate, and propose a resolution.
+4.  Watch the AI Specialist process the incident in real time — it will classify, triage, investigate, and propose a resolution.
 
-    > **Important:** This is not a simulation — the AI worker will take action on the selected record. Choose an appropriate test incident.
+    > **Important:** This is not a simulation — the AI Specialist will take action on the selected record. Choose an appropriate test incident.
 
 
 
@@ -171,12 +175,12 @@ Now let's see the AI Specialist in action on a real incident record.
 
 1. Select **Performance** in the left-hand navigation.
 2. Explore the three dashboard tabs:
-   * **Effectiveness** — Measure how well the AI worker resolves tickets, including incident outcomes by category and average exchanges for resolved tickets.
+   * **Effectiveness** — Measure how well the AI Specialist resolves tickets, including incident outcomes by category and average exchanges for resolved tickets.
    * **Efficiency** — Track speed and throughput metrics.
    * **Value & Feedback** — Review the business impact and feedback from agents and callers.
 3.  Use the **Assignment group** and **Date** filters to narrow the data.
 
-    > The Performance dashboard is your command center for monitoring the AI Specialist over time. In a fresh lab instance, data will populate as the AI worker processes more incidents.
+    > The Performance dashboard is your command center for monitoring the AI Specialist over time. In a fresh lab instance, data will populate as the AI Specialist processes more incidents.
 
 
 
@@ -187,13 +191,13 @@ Now let's see the AI Specialist in action on a real incident record.
 ### ❇️ Review the Activity Log
 
 1. Select **Activity** in the left-hand navigation.
-2. Review the **AI worker activity** list showing:
+2. Review the **AI Specialist activity** list showing:
    * **Associated record** — The incident number (e.g., `INC0010001`)
-   * **State** — Current state of the AI worker's task (e.g., Completed)
+   * **State** — Current state of the AI Specialist's task (e.g., Completed)
    * **State Reason** — Why the task is in that state
-   * **Assigned to** — The AI worker that handled it
+   * **Assigned to** — The AI Specialist that handled it
    * **Created** — Timestamp of when the activity was created
-   * **Feedback** — Thumbs up/down icons for providing feedback on the AI worker's performance
+   * **Feedback** — Thumbs up/down icons for providing feedback on the AI Specialist's performance
 3.  Toggle **Turn on live updates** to watch new activity appear in real time as the AI Specialist processes incidents.
 
 
@@ -225,9 +229,9 @@ You've configured the profile, tasks, and settings. This specialist is now LIVE!
 You have successfully:
 
 * Personalized the AI Specialist's profile and name
-* Added the AI worker to the IT Support assignment group
+* Added the AI Specialist to the IT Support assignment group
 * Configured classification fields for incident triage
-* Mapped AI worker states to incident states
+* Mapped AI Specialist states to incident states
 * Set up knowledge sources for investigation and resolution
 * Enabled Autonomous execution mode
 * Tested the AI Specialist against a real incident
