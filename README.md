@@ -37,7 +37,7 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
   var documented = 0;
   var changed = 0;
   var warnings = [];
-  var FINALIZER_BUILD = '2026-07-13-execution-plan-canary-v2';
+  var FINALIZER_BUILD = '2026-07-13-ztsd-content-publish-v3';
 
   function print(message) {
     gs.print(message);
@@ -782,10 +782,101 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
   // INC0010766 (ZScaler tunnel / DEX investigation) is intentionally excluded
   // and left to route back to the team via the RCA / DEX path.
   // ---------------------------------------------------------------------------
-  function seedRaviKbAndCatalog() {
-    var IT_KB_SYS_ID       = 'a7e8a78bff0221009b20ffffffffff17'; // "IT" knowledge base
-    var SERVICE_CATALOG_ID = 'e0d08b13c3330100c8b837659bba8fb4'; // Service Catalog
+  function ensureZtsdPublishedContent() {
     var allOk = true;
+
+    function flowByName(flowName) {
+      var flow = new GlideRecord('sys_hub_flow');
+      flow.addQuery('name', flowName);
+      flow.setLimit(1);
+      flow.query();
+      return flow.next() ? String(flow.getUniqueValue()) : '';
+    }
+
+    function catalogByTitle(title) {
+      var catalog = new GlideRecord('sc_catalog');
+      catalog.addQuery('title', title);
+      catalog.setLimit(1);
+      catalog.query();
+      return catalog.next() ? String(catalog.getUniqueValue()) : '';
+    }
+
+    var instantPublish = flowByName('Knowledge - Instant Publish');
+    var instantRetire = flowByName('Knowledge - Instant Retire');
+    var SERVICE_CATALOG_ID = catalogByTitle('Service Catalog');
+    if (!instantPublish) {
+      fail('ztsd-content', 'Knowledge - Instant Publish flow not found');
+      return false;
+    }
+
+    // Prefer an already-correct active IT base, then repair an existing IT
+    // base, and create one only when no natural-key match exists.
+    var IT_KB_SYS_ID = '';
+    var firstItBaseId = '';
+    var baseCandidates = 0;
+    var base = new GlideRecord('kb_knowledge_base');
+    base.addQuery('title', 'IT');
+    base.query();
+    while (base.next()) {
+      baseCandidates++;
+      if (!firstItBaseId) firstItBaseId = String(base.getUniqueValue());
+      var baseActive = String(base.getValue('active') || '');
+      if ((baseActive === 'true' || baseActive === '1') &&
+          String(base.getValue('kb_publish_flow') || '') === instantPublish) {
+        IT_KB_SYS_ID = String(base.getUniqueValue());
+        break;
+      }
+    }
+
+    if (!IT_KB_SYS_ID && firstItBaseId) IT_KB_SYS_ID = firstItBaseId;
+    if (IT_KB_SYS_ID) {
+      var existingBase = new GlideRecord('kb_knowledge_base');
+      if (!existingBase.get(IT_KB_SYS_ID)) {
+        fail('ztsd-content', 'resolved IT knowledge base could not be re-read');
+        return false;
+      }
+      var baseDirty = false;
+      var existingActive = String(existingBase.getValue('active') || '');
+      if (existingActive !== 'true' && existingActive !== '1') {
+        existingBase.setValue('active', true);
+        baseDirty = true;
+      }
+      if (String(existingBase.getValue('kb_publish_flow') || '') !== instantPublish) {
+        existingBase.setValue('kb_publish_flow', instantPublish);
+        baseDirty = true;
+      }
+      if (instantRetire && String(existingBase.getValue('kb_retire_flow') || '') !== instantRetire) {
+        existingBase.setValue('kb_retire_flow', instantRetire);
+        baseDirty = true;
+      }
+      if (baseDirty) {
+        if (!existingBase.update()) {
+          fail('ztsd-content', 'failed to configure existing IT knowledge base for instant publish');
+          return false;
+        }
+        changed++;
+        print('ZTSD_CONTENT: IT knowledge base repaired | sys_id=' + IT_KB_SYS_ID);
+      }
+    } else {
+      var newBase = new GlideRecord('kb_knowledge_base');
+      newBase.initialize();
+      newBase.setValue('title', 'IT');
+      newBase.setValue('active', true);
+      newBase.setValue('kb_publish_flow', instantPublish);
+      if (instantRetire) newBase.setValue('kb_retire_flow', instantRetire);
+      if (newBase.isValidField('owner')) newBase.setValue('owner', gs.getUserID());
+      IT_KB_SYS_ID = String(newBase.insert() || '');
+      if (!IT_KB_SYS_ID) {
+        fail('ztsd-content', 'failed to create active IT knowledge base');
+        return false;
+      }
+      changed++;
+      print('ZTSD_CONTENT: IT knowledge base created | sys_id=' + IT_KB_SYS_ID);
+    }
+    if (baseCandidates > 1) {
+      warn('ztsd-content: found ' + baseCandidates +
+        ' knowledge bases titled IT; selected and repaired ' + IT_KB_SYS_ID);
+    }
 
     var articles = [
       // INC0010002 — Outlook disconnecting from Exchange
@@ -885,16 +976,48 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
       // --- KB article ---
       var existingKb = new GlideRecord('kb_knowledge');
       existingKb.addQuery('short_description', a.kbTitle);
-      existingKb.addQuery('kb_knowledge_base', IT_KB_SYS_ID);
+      existingKb.orderByDesc('sys_created_on');
+      existingKb.setLimit(1);
       existingKb.query();
       if (existingKb.next()) {
-        pass(a.label + '-kb', 'KB article already exists | sys_id=' + existingKb.sys_id);
+        var kbDirty = false;
+        if (String(existingKb.getValue('kb_knowledge_base') || '') !== IT_KB_SYS_ID) {
+          existingKb.setValue('kb_knowledge_base', IT_KB_SYS_ID);
+          kbDirty = true;
+        }
+        if (String(existingKb.getValue('workflow_state') || '') !== 'published') {
+          existingKb.setValue('workflow_state', 'published');
+          kbDirty = true;
+        }
+        var kbActive = String(existingKb.getValue('active') || '');
+        if (existingKb.isValidField('active') && kbActive !== 'true' && kbActive !== '1') {
+          existingKb.setValue('active', true);
+          kbDirty = true;
+        }
+        if (existingKb.isValidField('valid_to') &&
+            String(existingKb.getValue('valid_to') || '').indexOf('2100-01-01') !== 0) {
+          existingKb.setValue('valid_to', '2100-01-01');
+          kbDirty = true;
+        }
+        if (kbDirty) {
+          if (!existingKb.update()) {
+            fail(a.label + '-kb', 'failed to repoint/publish KB article: ' + a.kbTitle);
+            allOk = false;
+          } else {
+            changed++;
+            pass(a.label + '-kb', 'KB article repointed and published | sys_id=' + existingKb.getUniqueValue());
+          }
+        } else {
+          pass(a.label + '-kb', 'KB article already searchable | sys_id=' + existingKb.getUniqueValue());
+        }
       } else {
         var nkb = new GlideRecord('kb_knowledge');
         nkb.initialize();
         nkb.setValue('kb_knowledge_base', IT_KB_SYS_ID);
         nkb.setValue('short_description', a.kbTitle);
         nkb.setValue('text', a.kbText);
+        if (nkb.isValidField('active')) nkb.setValue('active', true);
+        if (nkb.isValidField('valid_to')) nkb.setValue('valid_to', '2100-01-01');
         nkb.setValue('workflow_state', 'published');
         var kbId = nkb.insert();
         if (!kbId) {
@@ -918,7 +1041,7 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
         ncat.setValue('name', a.catName);
         ncat.setValue('short_description', a.catDesc.substring(0, 250));
         ncat.setValue('description', a.catDesc);
-        ncat.setValue('sc_catalogs', SERVICE_CATALOG_ID);
+        if (SERVICE_CATALOG_ID) ncat.setValue('sc_catalogs', SERVICE_CATALOG_ID);
         ncat.setValue('active', true);
         var catId = ncat.insert();
         if (!catId) {
@@ -931,12 +1054,52 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
       }
     }
 
-    if (allOk) {
-      pass('ravi-kb-catalog', 'ZTSD seed complete — 4 KB articles + 4 catalog items ready');
-    } else {
-      fail('ravi-kb-catalog', 'one or more KB/catalog seeds failed');
+    // Verify the exact AI Search KB-source condition with a fresh query.
+    var targetTitles = [];
+    for (var t = 0; t < articles.length; t++) targetTitles.push(articles[t].kbTitle);
+    var searchableTitles = {};
+    var check = new GlideRecord('kb_knowledge');
+    check.addQuery('kb_knowledge_base', IT_KB_SYS_ID);
+    check.addQuery('short_description', 'IN', targetTitles.join(','));
+    check.addEncodedQuery('active=true^kb_knowledge_base.active=true^workflow_state=published' +
+      '^valid_to>=javascript:gs.beginningOfToday()');
+    check.query();
+    while (check.next()) {
+      searchableTitles[String(check.getValue('short_description') || '')] = true;
     }
-    return allOk;
+    var searchable = 0;
+    for (var s = 0; s < targetTitles.length; s++) {
+      if (searchableTitles[targetTitles[s]]) searchable++;
+      else {
+        allOk = false;
+        warn('ztsd-content: article does not satisfy live AI Search condition: ' + targetTitles[s]);
+      }
+    }
+
+    var catalogReady = 0;
+    var catalogNames = [];
+    for (var c = 0; c < articles.length; c++) catalogNames.push(articles[c].catName);
+    var catCheck = new GlideRecord('sc_cat_item');
+    catCheck.addQuery('name', 'IN', catalogNames.join(','));
+    catCheck.addQuery('active', true);
+    catCheck.query();
+    var foundCatalogs = {};
+    while (catCheck.next()) foundCatalogs[String(catCheck.getValue('name') || '')] = true;
+    for (var ci = 0; ci < catalogNames.length; ci++) {
+      if (foundCatalogs[catalogNames[ci]]) catalogReady++;
+      else allOk = false;
+    }
+
+    print('ZTSD_CONTENT_VERIFY: searchable_articles=' + searchable + '/4 catalog_items=' +
+      catalogReady + '/4 kb_base=' + IT_KB_SYS_ID);
+    if (allOk && searchable === 4 && catalogReady === 4) {
+      pass('ztsd-content', '4 KB articles published in active IT base and 4 catalog items present');
+      return true;
+    }
+
+    fail('ztsd-content', 'content verification failed: searchable_articles=' + searchable +
+      '/4 catalog_items=' + catalogReady + '/4');
+    return false;
   }
 
   // ---------------------------------------------------------------------------
@@ -953,7 +1116,7 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
   var compiledActionOk = gateZtsdCompiledAction();
   var incidentOk = seedZscalerIncident();
   var runtimeCanaryOk = agentBindingOk && incidentOk && gateZtsdRuntimeCanary();
-  var contentOk = seedRaviKbAndCatalog();
+  var contentOk = ensureZtsdPublishedContent();
 
   print('ZTSD_CHANGES=' + changed);
   if (warnings.length) print('ZTSD_WARNINGS=' + JSON.stringify(warnings));
