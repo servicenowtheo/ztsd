@@ -23,24 +23,8 @@ Run this script only in your assigned lab instance. It modifies user preferences
 
 The script is idempotent. You can rerun it if a gate fails. Existing seed records are reused when possible.&#x20;
 
-### Verify results
-
-Confirm that the output includes these values:
-
-```
-GATE_ZTSD_APP_SCOPE=PASS
-GATE_ZTSD_DEX_FIX=PASS
-GATE_ZTSD_INCIDENT=PASS
-GATE_ZTSD_CONTENT=PASS
-VERDICT: PASS - ZTSD lab build finalized
-```
-
-Warnings do not always cause a failed verdict. Review every `WARN:` message. Stop and contact your lab facilitator if any gate reports `FAIL` or the verdict is not `PASS`.
-
-### Script
-
 {% code overflow="wrap" expandable="true" %}
-```javascript
+```
 
 
   function pass(gate, message) {
@@ -664,3 +648,19 @@ Warnings do not always cause a failed verdict. Review every `WARN:` message. Sto
 
 ```
 {% endcode %}
+
+### Verify results
+
+Confirm that the output includes these values:
+
+```
+GATE_ZTSD_APP_SCOPE=PASS
+GATE_ZTSD_DEX_FIX=PASS
+GATE_ZTSD_INCIDENT=PASS
+GATE_ZTSD_CONTENT=PASS
+VERDICT: PASS - ZTSD lab build finalized
+```
+
+Warnings do not always cause a failed verdict. Review every `WARN:` message. Stop and contact your lab facilitator if any gate reports `FAIL` or the verdict is not `PASS`.
+
+### Script
