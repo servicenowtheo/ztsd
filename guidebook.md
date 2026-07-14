@@ -8,6 +8,8 @@ description: Blast from the past
 >
 > 🧠 **This is where Zero Touch Support gets personal** — the AI Specialist is only as good as the knowledge you give it. Better articles mean faster, more accurate resolutions.
 
+> **Who to be:** Stay impersonating **Ravi Kapoor** from Exercise 3 for this exercise — his role set includes `knowledge`, which is enough to author and edit KB articles. If you ended impersonation, logging back in as the **System Administrator** works too.
+
 ***
 
 ### ❇️ Step 1 — Navigate to Knowledge Center
@@ -156,14 +158,14 @@ description: Blast from the past
 
 ***
 
-### ❇️ Step 4 — Save and Submit for Review
+### ❇️ Step 4 — Save and Publish
 
 1. Review your article content for completeness.
 2. Select **Save** in the top-right corner.
-3. Update the **Workflow** field from `Draft` to `Review`.
+3. Update the **Workflow** field from `Draft` to `Published`.
 4.  Select **Save** again.
 
-    > The article is now in review and requires approval before it can be published. A banner will appear at the top of the article: _"This knowledge item is in review."_
+    > On this lab's Knowledge Base, articles publish immediately — no separate approval step required. If your instance is configured differently, the article may instead move to **Review** and show the banner _"This knowledge item is in review."_ If that happens, complete Step 5 below before continuing; otherwise skip straight to Step 6.
 
 
 
@@ -173,9 +175,9 @@ description: Blast from the past
 
 ***
 
-### ❇️ Step 5 — Approve the Knowledge Article
+### ❇️ Step 5 — Approve the Knowledge Article (only if your article is stuck in Review)
 
-The article requires approval before it becomes available to the AI Specialist. You'll need to impersonate the approver to complete this step.
+Skip this step if your article's **Workflow** field already shows **Published** — most students won't need it. If your article is stuck in **Review**, it needs approval before it becomes available to the AI Specialist. You'll need to impersonate the approver to complete this step.
 
 1. On the knowledge article record, select the **Approvals** tab.
 2. Note the **Approver** name listed (e.g., `Bernard Laboy`).
@@ -250,8 +252,8 @@ Now create an incident that the AI Specialist can resolve using your new article
 You have successfully:
 
 * Created a new knowledge article in the IT Knowledge Base
-* Submitted the article for review and approved it by impersonating the designated approver
-* Published the article so it's available to the AI Specialist
+* Published the article (approving it first if your instance required that step)
+* Confirmed the article is available to the AI Specialist
 * Created a matching incident and assigned it to the AI Specialist
 * Watched the AI Specialist use your article to autonomously deflect the incident
 
