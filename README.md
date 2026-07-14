@@ -21,7 +21,7 @@ Run this script only in your assigned lab instance. It modifies user preferences
 
 <div><figure><img src=".gitbook/assets/2026-06-24 16.20.32.png" alt="Scripts - Background navigation in the ServiceNow All menu" width="188"><figcaption><p>Open **Scripts - Background** from the All menu.</p></figcaption></figure> <figure><img src=".gitbook/assets/2026-06-24 16.18.07.png" alt="Run script button in ServiceNow Background Scripts" width="158"><figcaption><p>Paste the script, then select **Run script**.</p></figcaption></figure></div>
 
-The script is idempotent. You can rerun it if a gate fails. Existing seed records are reused when possible.&#x20;
+The script is idempotent. You can rerun it if a gate fails. Existing seed records are reused when possible.
 
 {% code overflow="wrap" expandable="true" %}
 ```
@@ -1146,18 +1146,4 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
 ```
 {% endcode %}
 
-### Verify results
-
-Confirm that the output includes these values:
-
-```
-GATE_ZTSD_APP_SCOPE=PASS
-GATE_ZTSD_DEX_FIX=PASS
-GATE_ZTSD_INCIDENT=PASS
-GATE_ZTSD_CONTENT=PASS
-VERDICT: PASS - ZTSD lab build finalized
-```
-
-Warnings do not always cause a failed verdict. Review every `WARN:` message. Stop and contact your lab facilitator if any gate reports `FAIL` or the verdict is not `PASS`.
-
-### Script
+### .
