@@ -20,6 +20,8 @@ From the moment an employee picks up the phone to the moment their laptop issue 
 4. Monitor AI Specialist performance, activity, and feedback through built-in dashboards.
 5. Author and publish a knowledge article, then watch the AI Specialist use it to deflect a matching incident.
 
+> **Your instance may vary.** Each student gets their own separately-provisioned lab instance, so specific values you see on screen — record numbers, names, sys_ids, seed timestamps and counts — are illustrative, not guaranteed to match this guide's screenshots exactly. Match on structure, labels, and description text rather than pixel-for-pixel record values, and you'll be fine.
+
 ***
 
 ### Lab Personas
