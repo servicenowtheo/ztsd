@@ -21,7 +21,7 @@ Run this script only in your assigned lab instance. It modifies user preferences
 
 <div><figure><img src=".gitbook/assets/2026-06-24 16.20.32.png" alt="Scripts - Background navigation in the ServiceNow All menu" width="188"><figcaption><p>Open **Scripts - Background** from the All menu.</p></figcaption></figure> <figure><img src=".gitbook/assets/2026-06-24 16.18.07.png" alt="Run script button in ServiceNow Background Scripts" width="158"><figcaption><p>Paste the script, then select **Run script**.</p></figcaption></figure></div>
 
-The script is idempotent. You can rerun it if a gate fails. Existing seed records are reused when possible.&#x20;
+The script is idempotent. You can rerun it if a gate fails. Existing seed records are reused when possible.
 
 {% code overflow="wrap" expandable="true" %}
 ```
@@ -37,7 +37,7 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
   var documented = 0;
   var changed = 0;
   var warnings = [];
-  var FINALIZER_BUILD = '2026-07-13-ztsd-content-publish-v3';
+  var FINALIZER_BUILD = '2026-07-14-prelab-athena-deferred-v5';
 
   function print(message) {
     gs.print(message);
@@ -197,6 +197,15 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
     return found.length === 1 ? found[0] : '';
   }
 
+  function countByName(table, name) {
+    var count = 0;
+    var gr = new GlideRecord(table);
+    gr.addQuery('name', name);
+    gr.query();
+    while (gr.next()) count++;
+    return count;
+  }
+
   // Gold reference (154432): the worker template carries the runnable ZTSD
   // agent in `agents`; document_table/document_id are both empty. A partial
   // DARE install can instead leave agents empty and document_id dangling,
@@ -204,15 +213,23 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
   function repairZtsdAgentBinding() {
     var agentId = resolveUniqueByName('sn_aia_agent', 'Zero Touch Service Desk Agent');
     if (!agentId) {
-      fail('ztsd-agent-binding', 'expected exactly one Zero Touch Service Desk Agent');
+      fail('ztsd-agent-binding', 'expected exactly one Zero Touch Service Desk Agent; matches=' +
+        countByName('sn_aia_agent', 'Zero Touch Service Desk Agent'));
       return false;
     }
 
-    var workerId = resolveUniqueByName('sn_aia_worker', 'Athena Service Desk AI Specialist');
-    if (!workerId) {
-      fail('ztsd-agent-binding', 'expected exactly one Athena Service Desk AI Specialist worker');
+    var workerMatches = countByName('sn_aia_worker', 'Athena Service Desk AI Specialist');
+    if (workerMatches === 0) {
+      documented++;
+      print('DOCUMENTED [ztsd-agent-binding]: Athena worker is created during the guide; pre-lab binding repair deferred');
+      return true;
+    }
+    if (workerMatches > 1) {
+      fail('ztsd-agent-binding', 'expected at most one Athena Service Desk AI Specialist worker; matches=' +
+        workerMatches);
       return false;
     }
+    var workerId = resolveUniqueByName('sn_aia_worker', 'Athena Service Desk AI Specialist');
 
     var worker = new GlideRecord('sn_aia_worker');
     if (!worker.get(workerId)) {
@@ -564,6 +581,16 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
 
   function gateZtsdRuntimeCanary() {
     var SEED_SHORT_DESC = 'ZScaler tunnel dropping — cannot reach internal apps';
+    var workerMatches = countByName('sn_aia_worker', 'Athena Service Desk AI Specialist');
+    if (workerMatches === 0) {
+      documented++;
+      print('DOCUMENTED [ztsd-runtime-canary]: Athena worker is not created until the guide; runtime canary deferred');
+      return true;
+    }
+    if (workerMatches > 1) {
+      fail('ztsd-runtime-canary', 'duplicate Athena workers prevent deterministic canary; matches=' + workerMatches);
+      return false;
+    }
     var workerId = resolveUniqueByName('sn_aia_worker', 'Athena Service Desk AI Specialist');
     var agentId = resolveUniqueByName('sn_aia_agent', 'Zero Touch Service Desk Agent');
     if (!workerId || !agentId) {
@@ -1024,8 +1051,26 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
           fail(a.label + '-kb', 'kb_knowledge insert failed: ' + a.kbTitle);
           allOk = false;
         } else {
-          changed++;
-          pass(a.label + '-kb', 'KB article seeded | sys_id=' + kbId);
+          // Versioning initializes a new article as Draft after before-insert
+          // values are applied. Re-read the persisted version and publish it
+          // in a second write so a fresh instance succeeds in one script run.
+          var createdKb = new GlideRecord('kb_knowledge');
+          if (!createdKb.get(kbId)) {
+            fail(a.label + '-kb', 'inserted KB article could not be re-read: ' + kbId);
+            allOk = false;
+          } else {
+            createdKb.setValue('kb_knowledge_base', IT_KB_SYS_ID);
+            if (createdKb.isValidField('active')) createdKb.setValue('active', true);
+            if (createdKb.isValidField('valid_to')) createdKb.setValue('valid_to', '2100-01-01');
+            createdKb.setValue('workflow_state', 'published');
+            if (!createdKb.update()) {
+              fail(a.label + '-kb', 'post-insert publication failed: ' + a.kbTitle);
+              allOk = false;
+            } else {
+              changed++;
+              pass(a.label + '-kb', 'KB article created and published | sys_id=' + kbId);
+            }
+          }
         }
       }
 
@@ -1146,18 +1191,4 @@ The script is idempotent. You can rerun it if a gate fails. Existing seed record
 ```
 {% endcode %}
 
-### Verify results
-
-Confirm that the output includes these values:
-
-```
-GATE_ZTSD_APP_SCOPE=PASS
-GATE_ZTSD_DEX_FIX=PASS
-GATE_ZTSD_INCIDENT=PASS
-GATE_ZTSD_CONTENT=PASS
-VERDICT: PASS - ZTSD lab build finalized
-```
-
-Warnings do not always cause a failed verdict. Review every `WARN:` message. Stop and contact your lab facilitator if any gate reports `FAIL` or the verdict is not `PASS`.
-
-### Script
+### .
