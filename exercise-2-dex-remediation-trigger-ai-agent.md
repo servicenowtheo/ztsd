@@ -1,17 +1,20 @@
 # Exercise 2: DEX Remediation Trigger AI Agent
 
 > **Objective:** Verify that the DEX remediation trigger AI agent is active and review how it automatically executes remedial actions on end-user devices to resolve common device and application issues.
+>
+> ⏱️ **Total time:** ~5 minutes
 
 ***
 
 ### ❇️ Navigate to AI Agent Studio — Create and manage
 
 1. In the filter navigator, type **AI Agent Studio** and select **AI Agent Studio > Overview**.
-2. Select the **Create and manage** tab at the top of the page, and then click **Explore All**
-3.
+
+    > **Note:** AI Agent Studio is the workspace for *all* AI agents across your organization — not just the Service Desk specialist you configured in Exercise 1. Getting comfortable navigating here pays off well beyond this lab.
+2. On the **Ready-made solutions** panel, select the **AI agents** tab.
+3.  Select **Explore all** to view the full list of AI agents in your organization.
 
     <figure><img src=".gitbook/assets/2026-06-24 10.42.21.png" alt=""><figcaption></figcaption></figure>
-4.  Select the **AI agents** tab to view the full list of AI agents in your organization.
 
 
 
@@ -53,6 +56,8 @@ You are now in the **Agent-guided setup** for the DEX remediation trigger AI age
     * **Define security controls** — User access and data access policies
     * **Add triggers** — What events cause this agent to activate
     * **Select channels and status** — Communication channels and activation status
+
+    > **Note:** "Add tools and information" is where you directly restrict *which* tools and data sources an agent can reach — a separate control from the prompt/instructions you write on "Define the specialty." Restricting both together is what keeps an agent's blast radius contained.
 
     > The DEX remediation trigger AI agent works hand-in-hand with the L1 Service Desk AI Specialist. When the AI Specialist investigates an incident and determines that a device-level remediation is needed, it triggers this DEX agent to execute the fix directly on the end-user's device — no human intervention required. This is what makes the Zero Touch Support experience truly end-to-end.
 

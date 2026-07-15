@@ -7,6 +7,8 @@ description: Blast from the past
 > **Objective:** Author a brand new knowledge article in the IT Knowledge Base, publish it, then create an incident that the AI L1 Service Desk Specialist will deflect using your article. This demonstrates how the AI Specialist leverages your organization's knowledge content to resolve incidents autonomously.
 >
 > 🧠 **This is where Zero Touch Support gets personal** — the AI Specialist is only as good as the knowledge you give it. Better articles mean faster, more accurate resolutions.
+>
+> ⏱️ **Total time:** ~10 minutes
 
 > **Who to be:** Stay impersonating **Ravi Kapoor** from Exercise 3 for this exercise — his role set includes `knowledge`, which is enough to author and edit KB articles. If you ended impersonation, logging back in as the **System Administrator** works too.
 
@@ -50,6 +52,8 @@ description: Blast from the past
     1. From the **Blocks** panel on the right, drag the **1 Column** component onto the canvas.
     2. Then drag the **Text** block into the column.
     3. Select the Text block and paste or type your article content.
+
+    > **Watch for this:** the Text block template drops in placeholder copy like "insert text here." Make sure you delete it before pasting your content, or double-check afterward that it didn't survive alongside your real text.
 
     > **Pick a scenario below and copy the sample content into your article:**
 
@@ -210,10 +214,10 @@ Skip this step if your article's **Workflow** field already shows **Published** 
 
 Now create an incident that the AI Specialist can resolve using your new article.
 
-1. Navigate to **Service Operations Workspace** (Workspaces > Service Operations Workspace).
+1. Navigate to **Service Operations Workspace** (Workspaces > Service Operations Workspace), select the **List** button on the far left, then under **Incidents** select **All**, then select **New**.
 2.  Create a new incident and fill in the following fields:
 
-    * **Caller:** `Able Tuter`
+    * **Caller:** `Able Tuter`. **Note:** this persona doesn't exist on every instance — if you don't find them, pick any other available employee persona instead.
     * **Channel:** `Email`
     * **Short description:** Enter a description that matches your article. For example:
 
@@ -222,7 +226,7 @@ Now create an incident that the AI Specialist can resolve using your new article
     | Password Reset Self-Service Guide | `I'm locked out of my account and need to reset my password` |
     | Outlook FAQs                      | `Outlook keeps crashing every time I open it`                |
     | Corporate VPN Guide               | `I can't connect to the VPN from my home network`            |
-3. In the **Assigned to** field, type `ai` and select **AI L1 Service Desk Specialist**.
+3. In the **Assigned to** field, type `ai` (or the name you gave your specialist in Exercise 1 — remember it) and select your L1 Service Desk AI Specialist.
 4. Review the **Assign** dialog — note the Now Assist-generated work notes summarizing the issue.
 5. Select **Save**.
 
@@ -232,6 +236,8 @@ Now create an incident that the AI Specialist can resolve using your new article
 
 1. On the right sidebar, open the **Agentic Processes** menu item.
 2. Select **Show steps** to watch the AI Specialist work through the incident in real time.
+
+    > **Be patient:** this takes about 8-10 minutes.
 3. Observe as the AI Specialist:
    * Fetches task details
    * Researches knowledge sources

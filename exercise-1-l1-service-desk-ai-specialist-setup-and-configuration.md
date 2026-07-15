@@ -1,6 +1,8 @@
 # Exercise 1: L1 Service Desk AI Specialist Setup & Configuration
 
 > **Objective:** Configure and activate the L1 Service Desk AI Specialist so it can autonomously classify, triage, investigate, and resolve incidents on behalf of your IT Support team.
+>
+> ⏱️ **Total time:** ~15 minutes
 
 ***
 
@@ -148,6 +150,9 @@ Now let's see the AI Specialist in action on a real incident record.
 4.  Watch the AI Specialist process the incident in real time — it will classify, triage, investigate, and propose a resolution.
 
     > **Important:** This is not a simulation — the AI Specialist will take action on the selected record. Choose an appropriate test incident.
+5.  Select **View Details** to see the result. **Do not** click into **My Solutions** — that's a different view and won't show you the run you just kicked off.
+
+    > **Be patient:** the test takes about 5-7 minutes to complete. While it's running, **All Steps** keeps updating live, showing the AI Specialist's thought process — this is your window into how it's actually reasoning through the incident.
 
 <figure><img src=".gitbook/assets/10_test_ai_worker.png" alt=""><figcaption></figcaption></figure>
 
