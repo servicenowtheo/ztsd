@@ -1,6 +1,6 @@
 # Exercise 2: DEX Remediation Trigger AI Agent
 
-> **Objective:** Verify that the DEX remediation trigger AI agent is active and review how it automatically executes remedial actions on end-user devices to resolve common device and application issues.
+> **Objective:** Verify that the DEX remediation trigger AI agent is active and review how it autonomously diagnoses an issue, matches a remedial action, resolves the target device, and requests end-user consent — the decision-making steps this lab can fully prove. (The final device-side execution step needs a physical Agent Client Collector this lab doesn't provision — see the callout below and Exercise 3, Part D.)
 >
 > ⏱️ **Total time:** ~5 minutes
 
@@ -43,7 +43,7 @@ You are now in the **Agent-guided setup** for the DEX remediation trigger AI age
 
 1. On the **Define the specialty** page, review the following:
    * **AI agent name:** DEX remediation trigger AI agent
-   * **AI agent description:** Read through the description to understand what the agent does. This agent receives a resolution plan, checks for supported remedial actions, and executes them on end-user devices (Windows OS and Mac OS endpoints) to resolve common device and application issues.
+   * **AI agent description:** Read through the description to understand what the agent does. This agent receives a resolution plan, checks for supported remedial actions, resolves the target end-user device (Windows OS and Mac OS endpoints), and requests the end-user's consent to dispatch the fix — see the note below on where autonomous decision-making ends and real device-side execution would begin.
 2. Note the **four supported remedial actions** this agent can perform:
    * Restarting Zscaler service (Windows OS / Mac OS)
    * Clearing Microsoft Teams application cache (Windows OS / Mac OS)
@@ -78,4 +78,4 @@ You have successfully:
 * Reviewed the agent's specialty and supported remedial actions
 * Explored the agent's guided setup configuration
 
-🎉 **Nice work!** The DEX component of your Zero Touch Support experience is ready to go. Combined with the L1 Service Desk AI Specialist you configured earlier, you now have a complete autonomous support pipeline -
+🎉 **Nice work!** The DEX component of your Zero Touch Support experience is ready to go. Combined with the L1 Service Desk AI Specialist you configured earlier, you now have a pipeline that autonomously diagnoses, matches, resolves the device, and requests consent end-to-end — the last mile (a real device carrying out the fix) is outside this lab's scope, as Exercise 3 Part D will show.
