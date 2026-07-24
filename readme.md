@@ -8,17 +8,18 @@ description: >-
 
 ### Introduction and Objectives
 
-IT support teams face mounting pressure as ticket volumes grow, employee expectations rise, and skilled agents become harder to retain. Too often, routine incidents — password resets, application crashes, device issues — consume the same time and attention as complex, high-impact problems. In this lab, you will experience firsthand how ServiceNow's Zero Touch Support capabilities transform the IT service desk by connecting Voice AI, the L1 Service Desk AI Specialist, and Digital End-user Experience (DEX) into a seamless, autonomous support pipeline.
+IT support teams face mounting pressure as ticket volumes grow, employee expectations rise, and skilled agents become harder to retain. Too often, routine incidents — password resets, application crashes, device issues, access and equipment requests — consume the same time and attention as complex, high-impact problems. In this lab, you will experience firsthand how ServiceNow's Zero Touch Support capabilities transform the IT service desk by connecting Voice AI, the L1 Service Desk AI Specialist, and Digital End-user Experience (DEX) into a seamless support pipeline.
 
-From the moment an employee picks up the phone to the moment their laptop issue is remediated — without a single human agent involved — you'll see how these components work together to increase self-service and deflection rates, accelerate time to resolve, elevate service quality, and boost employee productivity and customer satisfaction.
+This lab is built around two proven capabilities, and it's honest about the difference between them. First, and most reliably: the L1 Service Desk AI Specialist resolving and triaging real incidents **entirely within ServiceNow** — no additional infrastructure required — including correctly recognizing when it should hand a ticket to a human instead of forcing a fit. Second, an **advanced, optional** look at the DEX remediation path: real autonomous device diagnosis, matching, and consent, going exactly as far as this lab's environment allows before handing off to infrastructure (a physical Agent Client Collector reporting through a MID Server or ITOM Cloud Services gateway) that only a production deployment would have.
 
 **By the end of this lab, you will be able to:**
 
 1. Set up and activate the L1 Service Desk AI Specialist to autonomously classify, investigate, and resolve incidents.
-2. Review the DEX remediation trigger AI agent and understand how it executes device-level fixes without human intervention.
-3. Run a complete end-to-end Zero Touch Support flow — from an employee's seeing an incident created by a phone call through autonomous resolution and device remediation.
-4. Monitor AI Specialist performance, activity, and feedback through built-in dashboards.
-5. Author and publish a knowledge article, then watch the AI Specialist use it to deflect a matching incident.
+2. Watch the AI Specialist autonomously resolve a real request, and separately, correctly escalate one it can't confidently match — both are success cases.
+3. Review the DEX remediation trigger AI agent and understand exactly what it proves autonomously (diagnosis, matching, consent) versus where full device-level execution requires infrastructure beyond this lab.
+4. Run a complete end-to-end Zero Touch Support flow across native ServiceNow resolution, escalation, and the advanced DEX handoff.
+5. Monitor AI Specialist performance, activity, and feedback through built-in dashboards.
+6. Author and publish a knowledge article, then watch the AI Specialist use it to deflect a matching incident.
 
 > **Your instance may vary.** Each student gets their own separately-provisioned lab instance, so specific values you see on screen — record numbers, names, sys_ids, seed timestamps and counts — are illustrative, not guaranteed to match this guide's screenshots exactly. Match on structure, labels, and description text rather than pixel-for-pixel record values, and you'll be fine.
 

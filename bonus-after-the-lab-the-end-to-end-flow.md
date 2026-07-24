@@ -119,7 +119,9 @@
     * ✅ Executing the determined resolution...
     * 🔴 Started AI Agent "Zero Touch Service..." _(DEX remediation triggered)_
 
-    > Watch this in real time — the AI Specialist is classifying the incident, researching knowledge sources, identifying potential solutions, and executing the resolution autonomously. When a device-level fix is needed, it triggers the DEX remediation agent to act directly on the end-user's device.
+    > Watch this in real time — the AI Specialist is classifying the incident, researching knowledge sources, identifying potential solutions, and resolving autonomously where it can. If a device-level fix looks needed, it triggers the DEX remediation agent, which diagnoses the device, matches a remedial action, and requests the caller's consent.
+    >
+    > **Note:** because this incident was created live from your own voice call, its outcome isn't scripted — it may resolve entirely within ServiceNow, escalate to a human (both correct, expected outcomes — see Exercise 3, Parts A–C for what each looks like), or reach a DEX consent request. If it reaches consent, remember that full device-level execution needs a real physical endpoint (an Agent Client Collector reporting through a MID Server/ITOM Cloud Services gateway) that this lab doesn't have — see Exercise 3, Part D for the full explanation of that boundary.
 
 
 
@@ -135,7 +137,7 @@
    * **Resolution notes** — The solution identified and actions taken
 2.  Confirm the incident fields have been updated by the AI Specialist (Category, Service, State, etc.).
 
-    > 🎉 **Congratulations!** You've just completed a full Zero Touch Support flow — from an employee's voice call, through AI-powered triage and investigation, to autonomous resolution and device remediation. No human agent touched this incident.
+    > 🎉 **Congratulations!** You've just completed a full Zero Touch Support flow — from an employee's voice call, through AI-powered triage and investigation, to autonomous resolution (or a correct escalation / consent request, depending on the issue). No human agent touched this incident up to that point.
 
 ***
 
@@ -145,8 +147,8 @@ You have successfully:
 
 * Created an incident using the **Voice AI** assistant
 * Assigned the incident to the **AI L1 Service Desk Specialist**
-* Watched the AI Specialist autonomously classify, triage, investigate, and resolve the incident
-* Observed the **DEX remediation trigger** activate for device-level fixes
+* Watched the AI Specialist autonomously classify, triage, investigate, and resolve or escalate the incident
+* If applicable, observed the **DEX remediation trigger** diagnose, match, and request consent for a device-level fix
 * Reviewed AI-generated resolution notes and field updates
 
 **You've just experienced the future of IT support — Zero Touch, from voice to resolution.** 🎉

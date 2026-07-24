@@ -59,7 +59,9 @@ You are now in the **Agent-guided setup** for the DEX remediation trigger AI age
 
     > **Note:** "Add tools and information" is where you directly restrict *which* tools and data sources an agent can reach — a separate control from the prompt/instructions you write on "Define the specialty." Restricting both together is what keeps an agent's blast radius contained.
 
-    > The DEX remediation trigger AI agent works hand-in-hand with the L1 Service Desk AI Specialist. When the AI Specialist investigates an incident and determines that a device-level remediation is needed, it triggers this DEX agent to execute the fix directly on the end-user's device — no human intervention required. This is what makes the Zero Touch Support experience truly end-to-end.
+    > The DEX remediation trigger AI agent works hand-in-hand with the L1 Service Desk AI Specialist. When the AI Specialist investigates an incident and determines that a device-level remediation is needed, it triggers this DEX agent, which requests the end-user's consent and then dispatches the fix to their device.
+    >
+    > **A note on what "no human intervention" means here:** the *decision-making* — diagnosis, matching a remedial action, resolving the correct device, and requesting consent — is genuinely autonomous end-to-end, and you'll prove that yourself in Exercise 3, Part D. The final step, a real device carrying out the fix and reporting back, requires a physical Agent Client Collector (ACC) reporting through a MID Server or ITOM Cloud Services gateway — infrastructure this lab doesn't provision. Exercise 3 walks through exactly where that boundary is and why it's expected, not a bug.
 
 
 
